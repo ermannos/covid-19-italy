@@ -1,5 +1,3 @@
-import Regione from './regione';
-
 const Regioni: Regione[] = [
   {
     codiceRegione: 13,
@@ -47,7 +45,7 @@ const Regioni: Regione[] = [
   },
   {
     codiceRegione: 21,
-    denominazioneRegione: 'P.A. bolzano',
+    denominazioneRegione: 'P.A. Bolzano',
   },
   {
     codiceRegione: 22,

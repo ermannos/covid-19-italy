@@ -16,7 +16,6 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import { refresh, getByRegionCode } from '../data/dataloader';
-import DataPoint from '../data/datapoint';
 import Regioni from '../data/regioni';
 
 const useStyles = makeStyles(theme => ({
@@ -43,6 +42,7 @@ const grafici = {
   8: { value: 8, description: 'Nuovi positivi', field: 'nuoviPositivi' },
   9: { value: 9, description: 'Totale positivi', field: 'totalePositivi' },
   10: { value: 10, description: 'Totale casi', field: 'totaleCasi' },
+  11: { value: 11, description: 'Percentuale di positivi giornalieri', field: 'positiviTamponi' },
 };
 
 const Home: React.FC = () => {

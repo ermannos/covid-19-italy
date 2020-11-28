@@ -21,7 +21,6 @@ interface DataPoint {
   tamponi: number;
   tamponiTotali: number;
   casiTestati: number;
+  positiviTamponi: number;
   note: string;
 }
-
-export default DataPoint;

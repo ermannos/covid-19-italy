@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
-import DataPoint from './datapoint';
 
 const url =
   'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni.json';
@@ -36,6 +35,7 @@ const loadAllData = (): Promise<DataPoint[]> => {
           totaleCasi: row.totale_casi,
           tamponi: 0,
           tamponiTotali: row.tamponi,
+          positiviTamponi: 0,
           casiTestati: row.casi_testati,
           note: row.note,
         };
@@ -62,8 +62,8 @@ const getByRegionCode = (regionCode: number): DataPoint[] => {
     decedutiPrevious = p.decedutiTotali;
     tamponiPrevious = p.tamponiTotali;
     p.totaleOspedalizzati = p.terapiaIntensiva + p.ricoveratiConSintomi;
+    p.positiviTamponi = Math.round((p.nuoviPositivi / p.tamponi) * 10000) / 100;
   });
-  console.log('points', points);
 
   return points;
 };
