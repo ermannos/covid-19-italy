@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React, { useEffect, useState, useMemo } from 'react';
 import { Container, FormControl, Select, MenuItem, Grid } from '@material-ui/core';
-import { blue, amber } from '@material-ui/core/colors';
+import { blue } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   ResponsiveContainer,

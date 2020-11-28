@@ -51,7 +51,7 @@ const getByRegionCode = (regionCode: number): DataPoint[] => {
   return datapoints.filter(point => point.codiceRegione === regionCode);
 };
 
-const refresh = () => {
+const refresh = (): Promise<DataPoint[]> => {
   return loadAllData().then(points => {
     points.forEach(point => {
       datapoints.push(point);

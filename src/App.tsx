@@ -7,7 +7,7 @@ import './App.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router basename="/covid-19-italy">
       <Header title="Covid-19 Italia" />
       <Switch>
         <Route exact path="/">

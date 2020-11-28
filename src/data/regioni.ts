@@ -79,7 +79,7 @@ const Regioni: Regione[] = [
   },
   {
     codiceRegione: 2,
-    denominazioneRegione: 'Valle D\'Aosta',
+    denominazioneRegione: "Valle D'Aosta",
   },
   {
     codiceRegione: 5,
