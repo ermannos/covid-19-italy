@@ -1,12 +1,16 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
+import DataPoint from '../types/datapoint';
 
-const url =
+const regionalUrl =
   'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni.json';
+const nationalUrl =
+  'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json';
 
-const datapoints: DataPoint[] = [];
+const regionalData: DataPoint[] = [];
+const nationalData: DataPoint[] = [];
 
-const loadAllData = (): Promise<DataPoint[]> => {
+const loadData = (url: string): Promise<DataPoint[]> => {
   const data: DataPoint[] = [];
   return axios
     .get(url)
@@ -51,30 +55,49 @@ const loadAllData = (): Promise<DataPoint[]> => {
     });
 };
 
+const loadRegionalData = (): Promise<DataPoint[]> => {
+  return loadData(regionalUrl);
+};
+
+const loadNationalData = (): Promise<DataPoint[]> => {
+  return loadData(nationalUrl);
+};
+
+const calculateDerivedData = (point: DataPoint, previousPoint: DataPoint): DataPoint => {
+  return {
+    ...point,
+    deceduti: previousPoint ? point.decedutiTotali - previousPoint.decedutiTotali : 0,
+    tamponi: previousPoint ? point.tamponiTotali - previousPoint.tamponiTotali : 0,
+    totaleOspedalizzati: previousPoint ? point.terapiaIntensiva + point.ricoveratiConSintomi : 0,
+    positiviTamponi: previousPoint
+      ? Math.round((point.nuoviPositivi / point.tamponi) * 10000) / 100
+      : 0,
+  };
+};
+
 const getByRegionCode = (regionCode: number): DataPoint[] => {
-  const points = datapoints.filter(point => point.codiceRegione === regionCode);
-  let decedutiPrevious = 0;
-  let tamponiPrevious = 0;
+  const points = regionalData.filter(point => point.codiceRegione === regionCode);
 
-  points.forEach(p => {
-    p.deceduti = p.decedutiTotali - decedutiPrevious;
-    p.tamponi = p.tamponiTotali - tamponiPrevious;
-    decedutiPrevious = p.decedutiTotali;
-    tamponiPrevious = p.tamponiTotali;
-    p.totaleOspedalizzati = p.terapiaIntensiva + p.ricoveratiConSintomi;
-    p.positiviTamponi = Math.round((p.nuoviPositivi / p.tamponi) * 10000) / 100;
+  let previousPoint: DataPoint;
+  return points.map(p => {
+    const newPoint = calculateDerivedData(p, previousPoint);
+    previousPoint = p;
+    return newPoint;
   });
-
-  return points;
 };
 
-const refresh = (): Promise<DataPoint[]> => {
-  return loadAllData().then(points => {
-    points.forEach(point => {
-      datapoints.push(point);
+const refresh = (): Promise<void> => {
+  return Promise.all([loadRegionalData(), loadNationalData()]).then(([rData, nData]) => {
+    rData.forEach(point => {
+      regionalData.push(point);
     });
-    return datapoints;
+
+    let previousPoint: DataPoint;
+    nData.forEach(point => {
+      nationalData.push(calculateDerivedData(point, previousPoint));
+      previousPoint = point;
+    });
   });
 };
 
-export { refresh, datapoints, getByRegionCode };
+export { refresh, getByRegionCode, nationalData };

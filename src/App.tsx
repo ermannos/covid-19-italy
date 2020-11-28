@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Page from './pages/Page';
 import Header from './pages/Header';
+import Footer from './pages/Footer';
 import './App.css';
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Page />
         </Route>
       </Switch>
+      <Footer />
     </Router>
   );
 };

@@ -24,3 +24,5 @@ interface DataPoint {
   positiviTamponi: number;
   note: string;
 }
+
+export default DataPoint;

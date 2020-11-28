@@ -15,8 +15,9 @@ import {
   Legend,
 } from 'recharts';
 import moment from 'moment';
-import { refresh, getByRegionCode } from '../data/dataloader';
+import { refresh, getByRegionCode, nationalData } from '../data/dataloader';
 import Regioni from '../data/regioni';
+import DataPoint from '../types/datapoint';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -28,6 +29,10 @@ const useStyles = makeStyles(theme => ({
   lastUpdate: {
     textAlign: 'right',
     padding: theme.spacing(2),
+  },
+  footer: {
+    backgroundColor: 'black',
+    color: 'white',
   },
 }));
 
@@ -53,12 +58,18 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     refresh().then(() => {
-      setRegione(3);
+      setRegione(99);
     });
   }, []);
 
   useEffect(() => {
-    if (regione) setDatapoints(getByRegionCode(regione));
+    if (regione) {
+      if (regione === 99) {
+        setDatapoints(nationalData);
+      } else {
+        setDatapoints(getByRegionCode(regione));
+      }
+    }
   }, [regione]);
 
   const onChangeRegione = evt => {
@@ -144,13 +155,6 @@ const Home: React.FC = () => {
               />
             </AreaChart>
           </ResponsiveContainer>
-        </Grid>
-
-        <Grid item xs={12} style={{ textAlign: 'center', fontSize: 'smaller' }}>
-          Data source:{' '}
-          <a href="https://github.com/pcm-dpc/COVID-19" target="_new">
-            Presidenza del Consiglio dei Ministri - Dipartimento della Protezione Civile
-          </a>
         </Grid>
       </Grid>
     </Container>

@@ -1,4 +1,10 @@
+import Regione from '../types/regione';
+
 const Regioni: Regione[] = [
+  {
+    codiceRegione: 99,
+    denominazioneRegione: 'ITALIA',
+  },
   {
     codiceRegione: 13,
     denominazioneRegione: 'Abruzzo',
