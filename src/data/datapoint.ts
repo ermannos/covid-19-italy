@@ -14,12 +14,14 @@ interface DataPoint {
   nuoviPositivi: number;
   dimessiGuariti: number;
   deceduti: number;
+  decedutiTotali: number;
   casiDaSospettoDiagnostico: number;
   casiDaScreening: number;
   totaleCasi: number;
   tamponi: number;
+  tamponiTotali: number;
   casiTestati: number;
   note: string;
-};
+}
 
 export default DataPoint;

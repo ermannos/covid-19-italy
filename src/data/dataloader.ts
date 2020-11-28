@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
 import DataPoint from './datapoint';
 
@@ -28,16 +29,19 @@ const loadAllData = (): Promise<DataPoint[]> => {
           variazioneTotalePositivi: row.variazione_totale_positivi,
           nuoviPositivi: row.nuovi_positivi,
           dimessiGuariti: row.dimessi_guariti,
-          deceduti: row.deceduti,
+          deceduti: 0,
+          decedutiTotali: row.deceduti,
           casiDaSospettoDiagnostico: row.casi_da_sospetto_diagnostico,
           casiDaScreening: row.casi_da_screening,
           totaleCasi: row.totale_casi,
-          tamponi: row.tamponi,
+          tamponi: 0,
+          tamponiTotali: row.tamponi,
           casiTestati: row.casi_testati,
           note: row.note,
         };
         data.push(point);
       });
+
       return data;
     })
     .catch(err => {
@@ -48,7 +52,19 @@ const loadAllData = (): Promise<DataPoint[]> => {
 };
 
 const getByRegionCode = (regionCode: number): DataPoint[] => {
-  return datapoints.filter(point => point.codiceRegione === regionCode);
+  const points = datapoints.filter(point => point.codiceRegione === regionCode);
+  let decedutiPrevious = 0;
+  let tamponiPrevious = 0;
+
+  points.forEach(p => {
+    p.deceduti = p.decedutiTotali - decedutiPrevious;
+    p.tamponi = p.tamponiTotali - tamponiPrevious;
+    decedutiPrevious = p.decedutiTotali;
+    tamponiPrevious = p.tamponiTotali;
+  });
+  console.log('points', points);
+
+  return points;
 };
 
 const refresh = (): Promise<DataPoint[]> => {
