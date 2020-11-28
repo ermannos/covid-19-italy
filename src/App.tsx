@@ -7,10 +7,10 @@ import './App.css';
 
 const App: React.FC = () => {
   return (
-    <Router basename="/covid-19-italy">
+    <Router>
       <Header title="Covid-19 Italia" />
       <Switch>
-        <Route exact path="/">
+        <Route exact path={['/', '/covid-19-italy']}>
           <Home />
         </Route>
         <Route path="/page">
