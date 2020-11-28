@@ -61,6 +61,7 @@ const getByRegionCode = (regionCode: number): DataPoint[] => {
     p.tamponi = p.tamponiTotali - tamponiPrevious;
     decedutiPrevious = p.decedutiTotali;
     tamponiPrevious = p.tamponiTotali;
+    p.totaleOspedalizzati = p.terapiaIntensiva + p.ricoveratiConSintomi;
   });
   console.log('points', points);
 
