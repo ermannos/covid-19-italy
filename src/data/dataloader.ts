@@ -70,7 +70,7 @@ const calculateDerivedData = (point: DataPoint, previousPoint: DataPoint): DataP
     tamponi: previousPoint ? point.tamponiTotali - previousPoint.tamponiTotali : 0,
     totaleOspedalizzati: previousPoint ? point.terapiaIntensiva + point.ricoveratiConSintomi : 0,
     positiviTamponi: previousPoint
-      ? Math.round((point.nuoviPositivi / point.tamponi) * 10000) / 100
+      ? Math.round((point.tamponiTotali - previousPoint.tamponiTotali) * 10000) / 100
       : 0,
   };
 };
