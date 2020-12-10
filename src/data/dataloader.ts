@@ -69,9 +69,12 @@ const calculateDerivedData = (point: DataPoint, previousPoint: DataPoint): DataP
     deceduti: previousPoint ? point.decedutiTotali - previousPoint.decedutiTotali : 0,
     tamponi: previousPoint ? point.tamponiTotali - previousPoint.tamponiTotali : 0,
     totaleOspedalizzati: previousPoint ? point.terapiaIntensiva + point.ricoveratiConSintomi : 0,
-    positiviTamponi: previousPoint
-      ? Math.round((point.tamponiTotali - previousPoint.tamponiTotali) * 10000) / 100
-      : 0,
+    positiviTamponi:
+      previousPoint && point.tamponiTotali > previousPoint.tamponiTotali
+        ? Math.round(
+            (point.nuoviPositivi / (point.tamponiTotali - previousPoint.tamponiTotali)) * 10000
+          ) / 100
+        : 0,
   };
 };
 

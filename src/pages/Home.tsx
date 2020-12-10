@@ -47,7 +47,7 @@ const grafici = {
   8: { value: 8, description: 'Nuovi positivi', field: 'nuoviPositivi' },
   9: { value: 9, description: 'Totale positivi', field: 'totalePositivi' },
   10: { value: 10, description: 'Totale casi', field: 'totaleCasi' },
-  11: { value: 11, description: 'Percentuale di positivi giornalieri', field: 'positiviTamponi' },
+  11: { value: 11, description: '% positivi/tamponi giornalieri', field: 'positiviTamponi' },
 };
 
 const Home: React.FC = () => {
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
       value: p[grafici[grafico].field],
     }));
   }, [datapoints, grafico]);
-
+  console.log('datapoints', datapoints);
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Grid container spacing={2}>
