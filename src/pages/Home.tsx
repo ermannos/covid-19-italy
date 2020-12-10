@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React, { useEffect, useState, useMemo } from 'react';
-import { Container, FormControl, Select, MenuItem, Grid, Typography } from '@material-ui/core';
+import {
+  Container,
+  FormControl,
+  Select,
+  MenuItem,
+  Grid,
+  Typography,
+  Slider,
+  Tooltip as MUITooltip,
+} from '@material-ui/core';
 import { blue } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -50,14 +59,36 @@ const grafici = {
   11: { value: 11, description: '% positivi/tamponi giornalieri', field: 'positiviTamponi' },
 };
 
+interface Props {
+  children: React.ReactElement;
+  open: boolean;
+  value: number;
+}
+
+function ValueLabelComponent(props: Props) {
+  const { children, open, value } = props;
+  return (
+    <MUITooltip open={open} enterTouchDelay={0} placement="top" title={value} arrow>
+      {children}
+    </MUITooltip>
+  );
+}
+
 const Home: React.FC = () => {
   const classes = useStyles();
   const [regione, setRegione] = useState(0);
   const [grafico, setGrafico] = useState(1);
   const [datapoints, setDatapoints] = useState<DataPoint[]>();
+  const [range, setRange] = useState([0, 100]);
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(100);
 
   useEffect(() => {
     refresh().then(() => {
+      setMin(0);
+      setMax(nationalData.length - 1);
+      setRange([0, nationalData.length - 1]);
+
       setRegione(99);
     });
   }, []);
@@ -82,12 +113,14 @@ const Home: React.FC = () => {
 
   const chartData = useMemo(() => {
     if (!datapoints) return [];
-    return datapoints.map(p => ({
-      data: moment(p.data).format('DD.MM.YYYY'),
-      value: p[grafici[grafico].field],
-    }));
-  }, [datapoints, grafico]);
-  console.log('datapoints', datapoints);
+    return datapoints
+      .filter((p, i) => i >= range[0] && i <= range[1])
+      .map(p => ({
+        data: moment(p.data).format('DD.MM.YYYY'),
+        value: p[grafici[grafico].field],
+      }));
+  }, [datapoints, grafico, range]);
+
   return (
     <Container maxWidth="xl" className={classes.container}>
       <Grid container spacing={2}>
@@ -155,6 +188,23 @@ const Home: React.FC = () => {
               />
             </AreaChart>
           </ResponsiveContainer>
+          <Grid item xs={12} style={{ marginTop: '24px' }}>
+            <Slider
+              value={range}
+              min={min}
+              max={max}
+              valueLabelDisplay="on"
+              onChange={(event, value) => {
+                if (Array.isArray(value)) setRange(value);
+              }}
+              ValueLabelComponent={ValueLabelComponent}
+              valueLabelFormat={x =>
+                nationalData && nationalData.length
+                  ? moment(nationalData[x].data).format('DD.MM.YYYY')
+                  : x
+              }
+            />
+          </Grid>
         </Grid>
       </Grid>
     </Container>
