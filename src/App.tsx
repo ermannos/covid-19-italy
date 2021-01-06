@@ -1,24 +1,34 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
 import Home from './pages/Home';
-import Page from './pages/Page';
+import Vaccini from './pages/Vaccini';
 import Header from './pages/Header';
-import Footer from './pages/Footer';
 import './App.css';
 
 const App: React.FC = () => {
   return (
     <Router basename="/covid-19-italy">
-      <Header title="Covid-19 Italia" />
       <Switch>
         <Route exact path={['/']}>
+          <Header
+            title="Covid-19 Italia"
+            subtitle="Andamento epidemia"
+            linkName="Vaccini"
+            link="/vaccini"
+          />
           <Home />
         </Route>
-        <Route path={['/page']}>
-          <Page />
+        <Route path={['/vaccini']}>
+          <Header
+            title="Covid-19 Italia"
+            subtitle="Andamento campagna vaccinale"
+            linkName="Home"
+            link="/"
+          />
+          <Vaccini />
         </Route>
       </Switch>
-      <Footer />
     </Router>
   );
 };

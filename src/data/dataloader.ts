@@ -91,6 +91,9 @@ const getByRegionCode = (regionCode: number): DataPoint[] => {
 
 const refresh = (): Promise<void> => {
   return Promise.all([loadRegionalData(), loadNationalData()]).then(([rData, nData]) => {
+    regionalData.splice(0, regionalData.length);
+    nationalData.splice(0, nationalData.length);
+
     rData.forEach(point => {
       regionalData.push(point);
     });

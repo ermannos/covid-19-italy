@@ -40,8 +40,9 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
   },
   footer: {
-    backgroundColor: 'black',
-    color: 'white',
+    textAlign: 'center',
+    padding: theme.spacing(2, 0),
+    backgroundColor: '#c0c0c0',
   },
 }));
 
@@ -122,92 +123,101 @@ const Home: React.FC = () => {
   }, [datapoints, grafico, range]);
 
   return (
-    <Container maxWidth="xl" className={classes.container}>
-      <Grid container spacing={2}>
-        <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
-          <FormControl variant="outlined" size="small" className={classes.formControl}>
-            <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
-              value={regione}
-              onChange={onChangeRegione}
-              placeholder="Regione"
-            >
-              {Regioni.map(r => (
-                <MenuItem key={`reg-${r.codiceRegione}`} value={r.codiceRegione}>
-                  {r.denominazioneRegione}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+    <>
+      <Container maxWidth="xl" className={classes.container}>
+        <Grid container spacing={2}>
+          <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
+            <FormControl variant="outlined" size="small" className={classes.formControl}>
+              <Select
+                labelId="demo-controlled-open-select-label"
+                id="demo-controlled-open-select"
+                value={regione}
+                onChange={onChangeRegione}
+                placeholder="Regione"
+              >
+                {Regioni.map(r => (
+                  <MenuItem key={`reg-${r.codiceRegione}`} value={r.codiceRegione}>
+                    {r.denominazioneRegione}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-        <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
-          <FormControl variant="outlined" size="small" className={classes.formControl}>
-            <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
-              value={grafico}
-              onChange={onChangeGrafico}
-              placeholder="Grafico"
-            >
-              {Object.values(grafici).map(g => (
-                <MenuItem key={`gf-${g.value}`} value={g.value}>
-                  {g.description}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+          <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
+            <FormControl variant="outlined" size="small" className={classes.formControl}>
+              <Select
+                labelId="demo-controlled-open-select-label"
+                id="demo-controlled-open-select"
+                value={grafico}
+                onChange={onChangeGrafico}
+                placeholder="Grafico"
+              >
+                {Object.values(grafici).map(g => (
+                  <MenuItem key={`gf-${g.value}`} value={g.value}>
+                    {g.description}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-        <Grid item xl={8} lg={8} md={6} sm={4} xs={12}>
-          <div className={classes.lastUpdate}>
-            <Typography>
-              Ultimo aggiornamento:{' '}
-              {datapoints && datapoints.length
-                ? moment(datapoints[datapoints.length - 1].data).format('DD/MM/YYYY')
-                : '-'}
-            </Typography>
-          </div>
-        </Grid>
+          <Grid item xl={8} lg={8} md={6} sm={4} xs={12}>
+            <div className={classes.lastUpdate}>
+              <Typography>
+                Ultimo aggiornamento:{' '}
+                {datapoints && datapoints.length
+                  ? moment(datapoints[datapoints.length - 1].data).format('DD/MM/YYYY')
+                  : '-'}
+              </Typography>
+            </div>
+          </Grid>
 
-        <Grid item xs={12}>
-          <ResponsiveContainer width="100%" height={700}>
-            <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <XAxis dataKey="data" />
-              <YAxis />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
-              <Legend />
-              <Area
-                type="monotone"
-                name={grafici[grafico].description}
-                dataKey="value"
-                stroke={blue[900]}
-                fill={blue[700]}
+          <Grid item xs={12}>
+            <ResponsiveContainer width="100%" height={700}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <XAxis dataKey="data" />
+                <YAxis />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Tooltip />
+                <Legend />
+                <Area
+                  type="monotone"
+                  name={grafici[grafico].description}
+                  dataKey="value"
+                  stroke={blue[900]}
+                  fill={blue[700]}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            <Grid item xs={12} style={{ marginTop: '24px' }}>
+              <Slider
+                value={range}
+                min={min}
+                max={max}
+                valueLabelDisplay="on"
+                onChange={(event, value) => {
+                  if (Array.isArray(value)) setRange(value);
+                }}
+                ValueLabelComponent={ValueLabelComponent}
+                valueLabelFormat={x =>
+                  nationalData && nationalData.length
+                    ? moment(nationalData[x].data).format('DD.MM.YYYY')
+                    : x
+                }
               />
-            </AreaChart>
-          </ResponsiveContainer>
-          <Grid item xs={12} style={{ marginTop: '24px' }}>
-            <Slider
-              value={range}
-              min={min}
-              max={max}
-              valueLabelDisplay="on"
-              onChange={(event, value) => {
-                if (Array.isArray(value)) setRange(value);
-              }}
-              ValueLabelComponent={ValueLabelComponent}
-              valueLabelFormat={x =>
-                nationalData && nationalData.length
-                  ? moment(nationalData[x].data).format('DD.MM.YYYY')
-                  : x
-              }
-            />
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+
+      <div className={classes.footer}>
+        Fonte dati:{' '}
+        <a href="https://github.com/pcm-dpc/COVID-19" target="_new">
+          Presidenza del Consiglio dei Ministri - Dipartimento della Protezione Civile
+        </a>
+      </div>
+    </>
   );
 };
 
