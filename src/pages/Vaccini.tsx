@@ -1,9 +1,13 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles';
-import { Container, Grid, Hidden, useMediaQuery } from '@material-ui/core';
+import { Container, Grid, Hidden, Typography, useMediaQuery } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { blue, deepOrange } from '@material-ui/core/colors';
+import { blue, grey } from '@material-ui/core/colors';
+import {
+  LocalShipping as LocalShippingIcon,
+  LocalHospital as LocalHospitalIcon,
+} from '@material-ui/icons';
 import moment from 'moment';
 import {
   ResponsiveContainer,
@@ -18,7 +22,7 @@ import {
 } from 'recharts';
 import { refresh, vaccines } from '../data/vaccini';
 import Regioni from '../data/regioni';
-import Vaccino from '../types/vaccini';
+import DataPaper from '../components/DataPaper';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -31,10 +35,19 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
     padding: theme.spacing(2),
   },
+  bigIcon: {
+    fontSize: '400%',
+  },
+  title: {
+    color: grey[500],
+  },
   footer: {
     textAlign: 'center',
     padding: theme.spacing(2, 0),
     backgroundColor: '#c0c0c0',
+  },
+  mb2: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -58,6 +71,8 @@ const StyledToggleButton = withStyles(styles, { withTheme: true })(ToggleButton)
 const Vaccini: React.FC = () => {
   const classes = useStyles();
   const [vacc, setVacc] = useState(vaccines);
+  const [shipped, setShipped] = useState(0);
+  const [given, setGiven] = useState(0);
   const [view, setView] = useState('values');
   const [regionMap, setRegionMap] = useState({});
 
@@ -80,6 +95,14 @@ const Vaccini: React.FC = () => {
     loadRegioni();
     refresh().then(vaxx => {
       setVacc(vaxx);
+      let c = 0;
+      let s = 0;
+      vaxx.forEach(vax => {
+        c += vax.dosiConsegnate;
+        s += vax.dosiSomministrate;
+      });
+      setShipped(c);
+      setGiven(s);
     });
   }, [loadRegioni]);
 
@@ -110,10 +133,36 @@ const Vaccini: React.FC = () => {
   return (
     <>
       <Container maxWidth="xl" className={classes.container}>
-        <Grid container spacing={2}>
-          <Hidden xsDown>
-            <Grid item xs={12} sm={3} />
+        <Grid container spacing={2} className={classes.mb2}>
+          <Hidden mdDown>
+            <Grid item xs={12} sm={6} md={6} lg={3} />
           </Hidden>
+          <Grid item xs={12} sm={6} md={6} lg={3}>
+            <DataPaper
+              title="Consegnati"
+              value={shipped}
+              icon={<LocalShippingIcon className={classes.bigIcon} />}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={6} lg={3}>
+            <DataPaper
+              title="Somministrati"
+              value={given}
+              icon={<LocalHospitalIcon className={classes.bigIcon} />}
+              percent={shipped === 0 ? 0 : (given * 100) / shipped}
+            />
+          </Grid>
+          <Hidden mdDown>
+            <Grid item xs={12} sm={6} md={6} lg={3} />
+          </Hidden>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={3}>
+            <Typography variant="h6" className={classes.title}>
+              <strong>Dati per regione</strong>
+            </Typography>
+          </Grid>
           <Grid item xs={12} sm={6}>
             <div className={classes.buttons}>
               <ToggleButtonGroup
