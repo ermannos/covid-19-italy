@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Vaccini from './pages/Vaccini';
+import Regione from './pages/Regione';
 import Header from './pages/Header';
 import './App.css';
 
@@ -27,6 +28,9 @@ const App: React.FC = () => {
             link="/"
           />
           <Vaccini />
+        </Route>
+        <Route path={['/regione/:code']}>
+          <Regione />
         </Route>
       </Switch>
     </Router>

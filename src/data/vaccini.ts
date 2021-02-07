@@ -1,19 +1,21 @@
 /* eslint-disable import/no-mutable-exports */
 import axios from 'axios';
-import Vaccino from '../types/vaccini';
+import { StatoVaccinazioni, Somministrazione, Consegna } from '../types/vaccini';
 
-let vaccines: Vaccino[] = [];
+let vaccines: StatoVaccinazioni[] = [];
+let somministrazioni: Somministrazione[] = [];
+let consegne: Consegna[] = [];
 
-const loadVaccini = (): Promise<Vaccino[]> => {
+const loadVaccini = (): Promise<StatoVaccinazioni[]> => {
   return axios
     .get(
       'https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/vaccini-summary-latest.json'
     )
     .then(response => response.data)
     .then(json => {
-      const vaxx: Vaccino[] = [];
+      const vaxx: StatoVaccinazioni[] = [];
       json.data.forEach(d => {
-        const vax: Vaccino = {
+        const vax: StatoVaccinazioni = {
           index: d.index,
           area: d.area,
           dosiSomministrate: d.dosi_somministrate,
@@ -27,11 +29,97 @@ const loadVaccini = (): Promise<Vaccino[]> => {
     });
 };
 
-const refresh = (): Promise<Vaccino[]> => {
+const loadSomministrazioni = (): Promise<Somministrazione[]> => {
+  return axios
+    .get(
+      'https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-summary-latest.json'
+    )
+    .then(response => response.data)
+    .then(json => {
+      const ss: Somministrazione[] = [];
+      json.data.forEach(d => {
+        const s: Somministrazione = {
+          index: d.index,
+          area: d.area,
+          dataSomministrazione: d.data_somministrazione,
+          totale: d.totale,
+          sessoMaschile: d.sesso_maschile,
+          sessoFemminile: d.sesso_femminile,
+          categoriaOperatoriSanitariSociosanitari: d.categoria_operatori_sanitari_sociosanitari,
+          categoriaPersonaleNonSanitario: d.categoria_personale_non_sanitario,
+          categoriaOspitiRsa: d.categoria_ospiti_rsa,
+          categoriaOver80: d.categoria_over_80,
+          primaDose: d.prima_dose,
+          secondaDose: d.seconda_dose,
+        };
+        ss.push(s);
+      });
+      return ss;
+    });
+};
+
+const loadConsegne = (): Promise<Consegna[]> => {
+  return axios
+    .get(
+      'https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.json'
+    )
+    .then(response => response.data)
+    .then(json => {
+      const cc: Consegna[] = [];
+      json.data.forEach(d => {
+        const c: Consegna = {
+          index: d.index,
+          area: d.area,
+          fornitore: d.fornitore.replace('Pfizer/BioNTech', 'Pfizer'),
+          dataConsegna: d.data_consegna,
+          numeroDosi: d.numero_dosi,
+        };
+        cc.push(c);
+      });
+      return cc;
+    });
+};
+
+const refresh = (): Promise<StatoVaccinazioni[]> => {
   return loadVaccini().then(vaxx => {
     vaccines = vaxx;
     return vaccines;
   });
 };
 
-export { refresh, vaccines };
+const refreshSomministrazioni = (): Promise<Somministrazione[]> => {
+  return loadSomministrazioni().then(ss => {
+    somministrazioni = ss;
+    return somministrazioni;
+  });
+};
+
+const refreshConsegne = (): Promise<Consegna[]> => {
+  return loadConsegne().then(cc => {
+    consegne = cc;
+    return consegne;
+  });
+};
+
+const getSomministrazioniByRegion = (regionCode: string): Somministrazione[] => {
+  return somministrazioni
+    .filter(s => s.area === regionCode)
+    .sort((a, b) => (a.dataSomministrazione > b.dataSomministrazione ? 1 : -1));
+};
+
+const getConsegneByRegion = (regionCode: string): Consegna[] => {
+  return consegne
+    .filter(s => s.area === regionCode)
+    .sort((a, b) => (a.dataConsegna > b.dataConsegna ? 1 : -1));
+};
+
+export {
+  refresh,
+  refreshSomministrazioni,
+  refreshConsegne,
+  vaccines,
+  somministrazioni,
+  consegne,
+  getSomministrazioniByRegion,
+  getConsegneByRegion,
+};

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React, { useEffect, useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Container,
   FormControl,
@@ -10,6 +11,7 @@ import {
   Typography,
   Slider,
   Tooltip as MUITooltip,
+  Button,
 } from '@material-ui/core';
 import { blue } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,10 +36,12 @@ const useStyles = makeStyles(theme => ({
   },
   formControl: {
     minWidth: 200,
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   lastUpdate: {
     textAlign: 'right',
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
   },
   footer: {
     textAlign: 'center',
@@ -77,12 +81,13 @@ function ValueLabelComponent(props: Props) {
 
 const Home: React.FC = () => {
   const classes = useStyles();
-  const [regione, setRegione] = useState(0);
+  const [regione, setRegione] = useState(99);
   const [grafico, setGrafico] = useState(1);
   const [datapoints, setDatapoints] = useState<DataPoint[]>();
   const [range, setRange] = useState([0, 100]);
   const [min, setMin] = useState(0);
   const [max, setMax] = useState(100);
+  const history = useHistory();
 
   useEffect(() => {
     refresh().then(() => {
@@ -122,11 +127,15 @@ const Home: React.FC = () => {
       }));
   }, [datapoints, grafico, range]);
 
+  const selectedRegione = useMemo(() => {
+    return Regioni.find(r => r.codiceRegione === regione);
+  }, [regione]);
+
   return (
     <>
       <Container maxWidth="xl" className={classes.container}>
-        <Grid container spacing={2}>
-          <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
+        <Grid container spacing={1}>
+          <Grid item xl={6} lg={8} md={8} sm={7} xs={12}>
             <FormControl variant="outlined" size="small" className={classes.formControl}>
               <Select
                 labelId="demo-controlled-open-select-label"
@@ -142,9 +151,7 @@ const Home: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
 
-          <Grid item xl={2} lg={2} md={3} sm={4} xs={6}>
             <FormControl variant="outlined" size="small" className={classes.formControl}>
               <Select
                 labelId="demo-controlled-open-select-label"
@@ -160,9 +167,22 @@ const Home: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
+
+            {regione === 99 ? null : (
+              <FormControl variant="outlined" size="small" className={classes.formControl}>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    history.push(`/regione/${selectedRegione?.codiceRegione}`);
+                  }}
+                >
+                  Focus {selectedRegione?.denominazioneRegione}
+                </Button>
+              </FormControl>
+            )}
           </Grid>
 
-          <Grid item xl={8} lg={8} md={6} sm={4} xs={12}>
+          <Grid item xl={6} lg={4} md={4} sm={5} xs={12}>
             <div className={classes.lastUpdate}>
               <Typography>
                 Ultimo aggiornamento:{' '}

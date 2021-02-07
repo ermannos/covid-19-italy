@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
+import { calendarFormat } from 'moment';
 import DataPoint from '../types/datapoint';
 
 const regionalUrl =
@@ -63,12 +64,12 @@ const loadNationalData = (): Promise<DataPoint[]> => {
   return loadData(nationalUrl);
 };
 
-const calculateDerivedData = (point: DataPoint, previousPoint: DataPoint): DataPoint => {
+const calculateDerivedData = (point: DataPoint, previousPoint?: DataPoint): DataPoint => {
   return {
     ...point,
     deceduti: previousPoint ? point.decedutiTotali - previousPoint.decedutiTotali : 0,
-    tamponi: previousPoint ? point.tamponiTotali - previousPoint.tamponiTotali : 0,
-    totaleOspedalizzati: previousPoint ? point.terapiaIntensiva + point.ricoveratiConSintomi : 0,
+    tamponi: point.tamponiTotali - (previousPoint ? previousPoint.tamponiTotali : 0),
+    totaleOspedalizzati: point.terapiaIntensiva + point.ricoveratiConSintomi,
     positiviTamponi:
       previousPoint && point.tamponiTotali > previousPoint.tamponiTotali
         ? Math.round(
@@ -89,6 +90,11 @@ const getByRegionCode = (regionCode: number): DataPoint[] => {
   });
 };
 
+const getLastByRegionCode = (regionCode: number): DataPoint => {
+  const data = getByRegionCode(regionCode);
+  return data[data.length - 1];
+};
+
 const refresh = (): Promise<void> => {
   return Promise.all([loadRegionalData(), loadNationalData()]).then(([rData, nData]) => {
     regionalData.splice(0, regionalData.length);
@@ -106,4 +112,4 @@ const refresh = (): Promise<void> => {
   });
 };
 
-export { refresh, getByRegionCode, nationalData };
+export { refresh, getByRegionCode, getLastByRegionCode, nationalData };

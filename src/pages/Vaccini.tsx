@@ -80,9 +80,6 @@ const Vaccini: React.FC = () => {
   const isXs = useMediaQuery(theme.breakpoints.down('xs'));
   const isSm = useMediaQuery(theme.breakpoints.down('sm'));
 
-  console.log('XS', isXs);
-  console.log('SM', isSm);
-
   const loadRegioni = useCallback(() => {
     const map = {};
     Regioni.forEach(r => {

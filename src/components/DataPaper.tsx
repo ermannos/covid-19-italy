@@ -7,13 +7,14 @@ type Props = {
   title: string;
   value: number;
   percent?: number;
+  delta?: number;
   icon?: React.ReactNode;
 };
 
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(1),
-    minHeight: '100px',
+    minHeight: '80px',
   },
   title: {
     color: grey[500],
@@ -35,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataPaper: React.FC<Props> = ({ title, value, icon, percent }) => {
+const DataPaper: React.FC<Props> = ({ title, value, icon, percent, delta }) => {
   const classes = useStyles();
 
   return (
@@ -48,6 +49,7 @@ const DataPaper: React.FC<Props> = ({ title, value, icon, percent }) => {
         <span>
           {new Intl.NumberFormat().format(value)}
           {percent ? ` (${percent.toFixed(1)}%)` : ''}
+          {delta ? `(${delta > 0 ? '+' : ''}${Intl.NumberFormat().format(delta)})` : ''}
         </span>
       </div>
     </Paper>
