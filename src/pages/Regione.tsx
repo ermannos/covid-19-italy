@@ -24,6 +24,9 @@ const useStyles = makeStyles(theme => ({
   section: {
     marginBottom: theme.spacing(4),
   },
+  subtitle: {
+    fontSize: '60%',
+  },
   footer: {
     textAlign: 'center',
     padding: theme.spacing(2, 0),
@@ -71,14 +74,14 @@ const Regione: React.FC = () => {
     ? somministrazioni[somministrazioni.length - 1]
     : undefined;
 
-  const previousConsegna: Consegna | undefined = consegne.length
-    ? consegne[consegne.length - 2]
-    : undefined;
+  const prepreviousConsegna: Consegna | undefined =
+    consegne.length >= 3 ? consegne[consegne.length - 3] : undefined;
+  const previousConsegna: Consegna | undefined =
+    consegne.length >= 2 ? consegne[consegne.length - 2] : undefined;
   const lastConsegna: Consegna | undefined = consegne.length
     ? consegne[consegne.length - 1]
     : undefined;
 
-  console.log(consegne, lastConsegna);
   return (
     <>
       <Header
@@ -90,7 +93,12 @@ const Regione: React.FC = () => {
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={2} className={classes.section}>
           <Grid item xs={12}>
-            <Typography variant="h4">Situazione epidemia</Typography>
+            <Typography variant="h4">
+              Situazione epidemia{' '}
+              <span className={classes.subtitle}>
+                {lastData ? ` al ${moment(lastData.data).format('DD/MM/YYYY')}` : ''}
+              </span>
+            </Typography>
           </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
@@ -129,11 +137,25 @@ const Regione: React.FC = () => {
               percent={lastData?.positiviTamponi || 0}
             />
           </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Attualmente positivi"
+              value={lastData?.totalePositivi || 0}
+              delta={(lastData?.totalePositivi || 0) - (previousData?.totalePositivi || 0)}
+            />
+          </Grid>
         </Grid>
 
         <Grid container spacing={2} className={classes.section}>
           <Grid item xs={12}>
-            <Typography variant="h4">Campagna vaccinale</Typography>
+            <Typography variant="h4">
+              Campagna vaccinale
+              <span className={classes.subtitle}>
+                {lastData
+                  ? ` al ${moment(lastSomministrazione?.dataSomministrazione).format('DD/MM/YYYY')}`
+                  : ''}
+              </span>
+            </Typography>
           </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
@@ -205,6 +227,18 @@ const Regione: React.FC = () => {
         <Grid container spacing={2} className={classes.section}>
           <Grid item xs={12}>
             <Typography variant="h4">Ultime consegne vaccini</Typography>
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title={
+                prepreviousConsegna
+                  ? `${prepreviousConsegna.fornitore} - ${moment(
+                      prepreviousConsegna.dataConsegna
+                    ).format('DD MMM')}`
+                  : ''
+              }
+              value={prepreviousConsegna?.numeroDosi || 0}
+            />
           </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
