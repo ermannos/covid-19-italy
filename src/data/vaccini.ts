@@ -48,7 +48,7 @@ const loadSomministrazioni = (): Promise<Somministrazione[]> => {
           categoriaOperatoriSanitariSociosanitari: d.categoria_operatori_sanitari_sociosanitari,
           categoriaPersonaleNonSanitario: d.categoria_personale_non_sanitario,
           categoriaOspitiRsa: d.categoria_ospiti_rsa,
-          categoriaOver80: d.categoria_over_80,
+          categoriaOver80: d.categoria_over80,
           primaDose: d.prima_dose,
           secondaDose: d.seconda_dose,
         };
@@ -107,6 +107,32 @@ const getSomministrazioniByRegion = (regionCode: string): Somministrazione[] => 
     .sort((a, b) => (a.dataSomministrazione > b.dataSomministrazione ? 1 : -1));
 };
 
+const getStatusByRegionType = (): Somministrazione[] => {
+  const status = {};
+  somministrazioni.forEach(s => {
+    if (!status[s.area]) {
+      status[s.area] = {
+        ...s,
+        dataSomministrazione: undefined,
+      };
+    } else {
+      if (s.area === 'LOM') console.log('Adding', s);
+      const a: Somministrazione = status[s.area];
+      a.categoriaOperatoriSanitariSociosanitari += s.categoriaOperatoriSanitariSociosanitari;
+      a.categoriaOspitiRsa += s.categoriaOspitiRsa;
+      a.categoriaOver80 += s.categoriaOver80;
+      a.categoriaPersonaleNonSanitario += s.categoriaPersonaleNonSanitario;
+      a.primaDose += s.primaDose;
+      a.secondaDose += s.secondaDose;
+      a.sessoFemminile += s.sessoFemminile;
+      a.sessoMaschile += s.sessoMaschile;
+      a.totale += s.totale;
+    }
+  });
+  const values: Somministrazione[] = Object.values(status);
+  return values.sort((a, b) => (a.area > b.area ? 1 : -1));
+};
+
 const getConsegneByRegion = (regionCode: string): Consegna[] => {
   return consegne
     .filter(s => s.area === regionCode)
@@ -122,4 +148,5 @@ export {
   consegne,
   getSomministrazioniByRegion,
   getConsegneByRegion,
+  getStatusByRegionType,
 };

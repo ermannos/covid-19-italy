@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Container, Grid, Hidden, Typography, useMediaQuery } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { blue, grey } from '@material-ui/core/colors';
+import { blue, grey, lightBlue, pink, lightGreen, orange, purple } from '@material-ui/core/colors';
 import {
   LocalShipping as LocalShippingIcon,
   LocalHospital as LocalHospitalIcon,
@@ -20,9 +20,10 @@ import {
   Legend,
   LabelList,
 } from 'recharts';
-import { refresh, vaccines } from '../data/vaccini';
+import { refresh, vaccines, refreshSomministrazioni, getStatusByRegionType } from '../data/vaccini';
 import Regioni from '../data/regioni';
 import DataPaper from '../components/DataPaper';
+import { Somministrazione } from '../types/vaccini';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -75,6 +76,7 @@ const Vaccini: React.FC = () => {
   const [given, setGiven] = useState(0);
   const [view, setView] = useState('values');
   const [regionMap, setRegionMap] = useState({});
+  const [statusByRegion, setStatusByRegion] = useState<Somministrazione[]>([]);
 
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('xs'));
@@ -101,6 +103,9 @@ const Vaccini: React.FC = () => {
       setShipped(c);
       setGiven(s);
     });
+    refreshSomministrazioni().then(() => {
+      setStatusByRegion(getStatusByRegionType());
+    });
   }, [loadRegioni]);
 
   const chartData = useMemo(() => {
@@ -115,6 +120,13 @@ const Vaccini: React.FC = () => {
         'Percentuale somministrazioni': v.percentualeSomministrazione,
       }));
   }, [vacc, regionMap]);
+
+  const chartData2 = useMemo(() => {
+    return statusByRegion.map(v => ({
+      regione: regionMap[v.area] || v.area,
+      ...v,
+    }));
+  }, [statusByRegion, regionMap]);
 
   const lastUpdate = useMemo(() => {
     let date;
@@ -155,12 +167,17 @@ const Vaccini: React.FC = () => {
         </Grid>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6}>
             <Typography variant="h6" className={classes.title}>
               <strong>Dati per regione</strong>
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Hidden xsDown>
+            <Grid item sm={6} className={classes.lastUpdate}>
+              Ultimo aggiornamento: {lastUpdate ? lastUpdate.format('DD/MM/YYYY') : ''}
+            </Grid>
+          </Hidden>
+          <Grid item sm={12}>
             <div className={classes.buttons}>
               <ToggleButtonGroup
                 size="medium"
@@ -170,26 +187,24 @@ const Vaccini: React.FC = () => {
                   setView(val);
                 }}
               >
-                <StyledToggleButton value="values">Valori</StyledToggleButton>
-                <StyledToggleButton value="percent">Percentuali</StyledToggleButton>
+                <StyledToggleButton value="values">Cons./som.</StyledToggleButton>
+                <StyledToggleButton value="percent">Sommin. (%)</StyledToggleButton>
+                <StyledToggleButton value="type">Categoria</StyledToggleButton>
+                <StyledToggleButton value="sex">Sesso</StyledToggleButton>
+                <StyledToggleButton value="dose">Dose</StyledToggleButton>
               </ToggleButtonGroup>
             </div>
           </Grid>
-          <Hidden xsDown>
-            <Grid item xs={12} sm={3} className={classes.lastUpdate}>
-              Ultimo aggiornamento: {lastUpdate ? lastUpdate.format('DD/MM/YYYY') : ''}
-            </Grid>
-          </Hidden>
         </Grid>
 
         <ResponsiveContainer width="100%" height={isXs ? 500 : isSm ? 600 : 700}>
           <BarChart
-            data={chartData}
+            data={view === 'type' || view === 'sex' || view === 'dose' ? chartData2 : chartData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             barGap={isXs ? -3 : isSm ? -7 : -15}
           >
             <XAxis dataKey="regione" angle={-60} textAnchor="end" height={130} interval={0} />
-            <YAxis width={view === 'values' ? 50 : 30} />
+            <YAxis width={view === 'percent' ? 30 : 50} />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
             <Legend />
@@ -198,8 +213,13 @@ const Vaccini: React.FC = () => {
             ) : null}
             {view === 'values' ? (
               <Bar dataKey="Dosi somministrate" stackId="a" fill={blue[400]} stroke={blue[600]} />
-            ) : (
-              <Bar dataKey="Percentuale somministrazioni" fill={blue[700]} stroke={blue[900]}>
+            ) : null}
+            {view === 'percent' ? (
+              <Bar
+                dataKey="Percentuale somministrazioni"
+                fill={lightGreen[700]}
+                stroke={lightGreen[900]}
+              >
                 {isSm ? null : (
                   <LabelList
                     dataKey="Percentuale somministrazioni"
@@ -208,7 +228,82 @@ const Vaccini: React.FC = () => {
                   />
                 )}
               </Bar>
-            )}
+            ) : null}
+
+            {view === 'type' ? (
+              <Bar
+                dataKey="categoriaOperatoriSanitariSociosanitari"
+                name="Operatori sanitari"
+                stackId="a"
+                fill={purple[800]}
+                stroke={purple[900]}
+              />
+            ) : null}
+            {view === 'type' ? (
+              <Bar
+                dataKey="categoriaOspitiRsa"
+                name="Ospiti RSA"
+                stackId="a"
+                fill={purple[600]}
+                stroke={purple[700]}
+              />
+            ) : null}
+            {view === 'type' ? (
+              <Bar
+                dataKey="categoriaOver80"
+                name="Over 80"
+                stackId="a"
+                fill={purple[400]}
+                stroke={purple[500]}
+              />
+            ) : null}
+            {view === 'type' ? (
+              <Bar
+                dataKey="categoriaPersonaleNonSanitario"
+                name="Personale non sanitario"
+                stackId="a"
+                fill={purple[200]}
+                stroke={purple[300]}
+              />
+            ) : null}
+
+            {view === 'sex' ? (
+              <Bar
+                dataKey="sessoMaschile"
+                name="Maschi"
+                stackId="a"
+                fill={lightBlue[400]}
+                stroke={lightBlue[600]}
+              />
+            ) : null}
+            {view === 'sex' ? (
+              <Bar
+                dataKey="sessoFemminile"
+                name="Femmine"
+                stackId="a"
+                fill={pink[300]}
+                stroke={pink[500]}
+              />
+            ) : null}
+
+            {view === 'dose' ? (
+              <Bar
+                dataKey="primaDose"
+                name="Prima dose"
+                stackId="a"
+                fill={orange[700]}
+                stroke={orange[900]}
+              />
+            ) : null}
+            {view === 'dose' ? (
+              <Bar
+                dataKey="secondaDose"
+                name="Seconda dose"
+                stackId="a"
+                fill={orange[400]}
+                stroke={orange[600]}
+              />
+            ) : null}
           </BarChart>
         </ResponsiveContainer>
       </Container>

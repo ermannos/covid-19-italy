@@ -23,13 +23,15 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    '& *:last-child': {
-      marginLeft: theme.spacing(2),
-      flexGrow: 1,
-      textAlign: 'right',
-      fontSize: '170%',
-      fontWeight: 'bold',
-    },
+  },
+  value: {
+    flexGrow: 1,
+    textAlign: 'right',
+    fontSize: '1.7rem',
+    fontWeight: 'bold',
+  },
+  addendum: {
+    fontSize: '1.3rem',
   },
   bigIcon: {
     fontSize: '400%',
@@ -46,10 +48,16 @@ const DataPaper: React.FC<Props> = ({ title, value, icon, percent, delta }) => {
       </Typography>
       <div className={classes.paperContent}>
         {icon || <span>&nbsp;</span>}
-        <span>
+        <span className={classes.value}>
           {new Intl.NumberFormat().format(value)}
-          {percent ? ` (${percent.toFixed(1)}%)` : ''}
-          {delta ? `(${delta > 0 ? '+' : ''}${Intl.NumberFormat().format(delta)})` : ''}
+          {percent ? <span className={classes.addendum}>{` (${percent.toFixed(1)}%)`}</span> : ''}
+          {delta ? (
+            <span className={classes.addendum}>
+              {` (${delta > 0 ? '+' : ''}${Intl.NumberFormat().format(delta)})`}
+            </span>
+          ) : (
+            ''
+          )}
         </span>
       </div>
     </Paper>
