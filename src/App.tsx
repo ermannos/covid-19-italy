@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Vaccini from './pages/Vaccini';
@@ -11,7 +11,11 @@ const App: React.FC = () => {
   return (
     <Router basename="/covid-19-italy">
       <Switch>
-        <Route exact path={['/']}>
+        <Route exact path="/">
+          <Redirect to="/epidemia/99" />
+        </Route>
+
+        <Route exact path={['/epidemia/:regione']}>
           <Header
             title="Covid-19 Italia"
             subtitle="Andamento epidemia"
@@ -20,6 +24,7 @@ const App: React.FC = () => {
           />
           <Home />
         </Route>
+
         <Route path={['/vaccini']}>
           <Header
             title="Covid-19 Italia"

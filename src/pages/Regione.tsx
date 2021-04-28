@@ -21,6 +21,9 @@ const useStyles = makeStyles(theme => ({
     minHeight: 600,
     padding: theme.spacing(2, 3),
   },
+  sectionTitle: {
+    marginBottom: theme.spacing(2),
+  },
   section: {
     marginBottom: theme.spacing(4),
   },
@@ -74,11 +77,13 @@ const Regione: React.FC = () => {
     ? somministrazioni[somministrazioni.length - 1]
     : undefined;
 
-  const prepreviousConsegna: Consegna | undefined =
+  const lastConsegna1: Consegna | undefined =
+    consegne.length >= 4 ? consegne[consegne.length - 4] : undefined;
+  const lastConsegna2: Consegna | undefined =
     consegne.length >= 3 ? consegne[consegne.length - 3] : undefined;
-  const previousConsegna: Consegna | undefined =
+  const lastConsegna3: Consegna | undefined =
     consegne.length >= 2 ? consegne[consegne.length - 2] : undefined;
-  const lastConsegna: Consegna | undefined = consegne.length
+  const lastConsegna4: Consegna | undefined = consegne.length
     ? consegne[consegne.length - 1]
     : undefined;
 
@@ -87,19 +92,17 @@ const Regione: React.FC = () => {
       <Header
         title="Covid-19 Italia"
         subtitle={`Focus ${regione?.denominazioneRegione}`}
-        linkName="Home"
-        link="/"
+        linkName="Epidemia"
+        link={`/epidemia/${code}`}
       />
       <Container maxWidth="xl" className={classes.container}>
+        <Typography variant="h4" className={classes.sectionTitle}>
+          Situazione epidemia{' '}
+          <span className={classes.subtitle}>
+            {lastData ? ` al ${moment(lastData.data).format('DD/MM/YYYY')}` : ''}
+          </span>
+        </Typography>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12}>
-            <Typography variant="h4">
-              Situazione epidemia{' '}
-              <span className={classes.subtitle}>
-                {lastData ? ` al ${moment(lastData.data).format('DD/MM/YYYY')}` : ''}
-              </span>
-            </Typography>
-          </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title="Pazienti degenti"
@@ -146,17 +149,15 @@ const Regione: React.FC = () => {
           </Grid>
         </Grid>
 
+        <Typography variant="h4" className={classes.sectionTitle}>
+          Campagna vaccinale
+          <span className={classes.subtitle}>
+            {lastData
+              ? ` al ${moment(lastSomministrazione?.dataSomministrazione).format('DD/MM/YYYY')}`
+              : ''}
+          </span>
+        </Typography>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12}>
-            <Typography variant="h4">
-              Campagna vaccinale
-              <span className={classes.subtitle}>
-                {lastData
-                  ? ` al ${moment(lastSomministrazione?.dataSomministrazione).format('DD/MM/YYYY')}`
-                  : ''}
-              </span>
-            </Typography>
-          </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title="Vaccini somministrati"
@@ -183,6 +184,8 @@ const Regione: React.FC = () => {
               }
             />
           </Grid>
+        </Grid>
+        <Grid container spacing={2} className={classes.section}>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title="Operatori sanitari"
@@ -200,6 +203,46 @@ const Regione: React.FC = () => {
               delta={
                 (lastSomministrazione?.categoriaOspitiRsa || 0) -
                 (previousSomministrazione?.categoriaOspitiRsa || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Under 50"
+              value={lastSomministrazione?.categoriaUnder50 || 0}
+              delta={
+                (lastSomministrazione?.categoriaUnder50 || 0) -
+                (previousSomministrazione?.categoriaUnder50 || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="50-59 anni"
+              value={lastSomministrazione?.categoria5059 || 0}
+              delta={
+                (lastSomministrazione?.categoria5059 || 0) -
+                (previousSomministrazione?.categoria5059 || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="60-69 anni"
+              value={lastSomministrazione?.categoria6069 || 0}
+              delta={
+                (lastSomministrazione?.categoria6069 || 0) -
+                (previousSomministrazione?.categoria6069 || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="70-79 anni"
+              value={lastSomministrazione?.categoria7079 || 0}
+              delta={
+                (lastSomministrazione?.categoria7079 || 0) -
+                (previousSomministrazione?.categoria7079 || 0)
               }
             />
           </Grid>
@@ -223,45 +266,98 @@ const Regione: React.FC = () => {
               }
             />
           </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Pers. scolastico"
+              value={lastSomministrazione?.categoriaPersonaleScolastico || 0}
+              delta={
+                (lastSomministrazione?.categoriaPersonaleScolastico || 0) -
+                (previousSomministrazione?.categoriaPersonaleScolastico || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Sogg. fragili"
+              value={lastSomministrazione?.categoriaSoggettiFragili || 0}
+              delta={
+                (lastSomministrazione?.categoriaSoggettiFragili || 0) -
+                (previousSomministrazione?.categoriaSoggettiFragili || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Forze armate"
+              value={lastSomministrazione?.categoriaForzeArmate || 0}
+              delta={
+                (lastSomministrazione?.categoriaForzeArmate || 0) -
+                (previousSomministrazione?.categoriaForzeArmate || 0)
+              }
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title="Altro"
+              value={lastSomministrazione?.categoriaAltro || 0}
+              delta={
+                (lastSomministrazione?.categoriaAltro || 0) -
+                (previousSomministrazione?.categoriaAltro || 0)
+              }
+            />
+          </Grid>
         </Grid>
+
+        <Typography variant="h4" className={classes.sectionTitle}>
+          Ultime consegne vaccini
+        </Typography>
         <Grid container spacing={2} className={classes.section}>
-          <Grid item xs={12}>
-            <Typography variant="h4">Ultime consegne vaccini</Typography>
-          </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title={
-                prepreviousConsegna
-                  ? `${prepreviousConsegna.fornitore} - ${moment(
-                      prepreviousConsegna.dataConsegna
-                    ).format('DD MMM')}`
+                lastConsegna1
+                  ? `${lastConsegna1.fornitore} - ${moment(lastConsegna1.dataConsegna).format(
+                      'DD MMM'
+                    )}`
                   : ''
               }
-              value={prepreviousConsegna?.numeroDosi || 0}
+              value={lastConsegna2?.numeroDosi || 0}
             />
           </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title={
-                previousConsegna
-                  ? `${previousConsegna.fornitore} - ${moment(previousConsegna.dataConsegna).format(
+                lastConsegna2
+                  ? `${lastConsegna2.fornitore} - ${moment(lastConsegna2.dataConsegna).format(
                       'DD MMM'
                     )}`
                   : ''
               }
-              value={previousConsegna?.numeroDosi || 0}
+              value={lastConsegna2?.numeroDosi || 0}
             />
           </Grid>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
               title={
-                lastConsegna
-                  ? `${lastConsegna.fornitore} - ${moment(lastConsegna.dataConsegna).format(
+                lastConsegna3
+                  ? `${lastConsegna3.fornitore} - ${moment(lastConsegna3.dataConsegna).format(
                       'DD MMM'
                     )}`
                   : ''
               }
-              value={lastConsegna?.numeroDosi || 0}
+              value={lastConsegna3?.numeroDosi || 0}
+            />
+          </Grid>
+          <Grid item md={3} sm={4} xs={12}>
+            <DataPaper
+              title={
+                lastConsegna4
+                  ? `${lastConsegna4.fornitore} - ${moment(lastConsegna4.dataConsegna).format(
+                      'DD MMM'
+                    )}`
+                  : ''
+              }
+              value={lastConsegna4?.numeroDosi || 0}
             />
           </Grid>
         </Grid>

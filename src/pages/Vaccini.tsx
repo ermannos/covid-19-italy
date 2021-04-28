@@ -3,7 +3,17 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Container, Grid, Hidden, Typography, useMediaQuery } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { blue, grey, lightBlue, pink, lightGreen, orange, purple } from '@material-ui/core/colors';
+import {
+  blue,
+  grey,
+  lightBlue,
+  pink,
+  lightGreen,
+  orange,
+  purple,
+  green,
+  indigo,
+} from '@material-ui/core/colors';
 import {
   LocalShipping as LocalShippingIcon,
   LocalHospital as LocalHospitalIcon,
@@ -20,10 +30,17 @@ import {
   Legend,
   LabelList,
 } from 'recharts';
-import { refresh, vaccines, refreshSomministrazioni, getStatusByRegionType } from '../data/vaccini';
+import {
+  refresh,
+  vaccines,
+  refreshConsegne,
+  refreshSomministrazioni,
+  getStatusByRegionType,
+  getTotaleConsegneBySupplier,
+} from '../data/vaccini';
 import Regioni from '../data/regioni';
 import DataPaper from '../components/DataPaper';
-import { Somministrazione } from '../types/vaccini';
+import { Consegna, Somministrazione } from '../types/vaccini';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -77,6 +94,7 @@ const Vaccini: React.FC = () => {
   const [view, setView] = useState('values');
   const [regionMap, setRegionMap] = useState({});
   const [statusByRegion, setStatusByRegion] = useState<Somministrazione[]>([]);
+  const [consegneBySupplier, setConsegneBySupplier] = useState<Consegna[]>([]);
 
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('xs'));
@@ -106,6 +124,9 @@ const Vaccini: React.FC = () => {
     refreshSomministrazioni().then(() => {
       setStatusByRegion(getStatusByRegionType());
     });
+    refreshConsegne().then(() => {
+      setConsegneBySupplier(getTotaleConsegneBySupplier());
+    });
   }, [loadRegioni]);
 
   const chartData = useMemo(() => {
@@ -128,6 +149,12 @@ const Vaccini: React.FC = () => {
     }));
   }, [statusByRegion, regionMap]);
 
+  const chartData3 = useMemo(() => {
+    return consegneBySupplier.sort((a, b) => {
+      return a.numeroDosi < b.numeroDosi ? 1 : -1;
+    });
+  }, [consegneBySupplier]);
+
   const lastUpdate = useMemo(() => {
     let date;
     vacc.forEach(v => {
@@ -138,6 +165,18 @@ const Vaccini: React.FC = () => {
     });
     return date;
   }, [vacc]);
+
+  const getBar = (viewRestriction, name, dataKey, color, stackId) => {
+    return view === viewRestriction ? (
+      <Bar dataKey={dataKey} name={name} stackId={stackId} fill={color} stroke={color} />
+    ) : null;
+  };
+
+  const getChartData = () => {
+    if (view === 'type' || view === 'sex' || view === 'dose') return chartData2;
+    if (view === 'supplier') return chartData3;
+    return chartData;
+  };
 
   return (
     <>
@@ -192,6 +231,7 @@ const Vaccini: React.FC = () => {
                 <StyledToggleButton value="type">Categoria</StyledToggleButton>
                 <StyledToggleButton value="sex">Sesso</StyledToggleButton>
                 <StyledToggleButton value="dose">Dose</StyledToggleButton>
+                <StyledToggleButton value="supplier">Fornitore</StyledToggleButton>
               </ToggleButtonGroup>
             </div>
           </Grid>
@@ -199,12 +239,18 @@ const Vaccini: React.FC = () => {
 
         <ResponsiveContainer width="100%" height={isXs ? 500 : isSm ? 600 : 700}>
           <BarChart
-            data={view === 'type' || view === 'sex' || view === 'dose' ? chartData2 : chartData}
+            data={getChartData()}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             barGap={isXs ? -3 : isSm ? -7 : -15}
           >
-            <XAxis dataKey="regione" angle={-60} textAnchor="end" height={130} interval={0} />
-            <YAxis width={view === 'percent' ? 30 : 50} />
+            <XAxis
+              dataKey={view === 'supplier' ? 'fornitore' : 'regione'}
+              angle={-60}
+              textAnchor="end"
+              height={130}
+              interval={0}
+            />
+            <YAxis width={view === 'percent' ? 30 : 70} />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
             <Legend />
@@ -230,42 +276,37 @@ const Vaccini: React.FC = () => {
               </Bar>
             ) : null}
 
-            {view === 'type' ? (
-              <Bar
-                dataKey="categoriaOperatoriSanitariSociosanitari"
-                name="Operatori sanitari"
-                stackId="a"
-                fill={purple[800]}
-                stroke={purple[900]}
-              />
-            ) : null}
-            {view === 'type' ? (
-              <Bar
-                dataKey="categoriaOspitiRsa"
-                name="Ospiti RSA"
-                stackId="a"
-                fill={purple[600]}
-                stroke={purple[700]}
-              />
-            ) : null}
-            {view === 'type' ? (
-              <Bar
-                dataKey="categoriaOver80"
-                name="Over 80"
-                stackId="a"
-                fill={purple[400]}
-                stroke={purple[500]}
-              />
-            ) : null}
-            {view === 'type' ? (
-              <Bar
-                dataKey="categoriaPersonaleNonSanitario"
-                name="Personale non sanitario"
-                stackId="a"
-                fill={purple[200]}
-                stroke={purple[300]}
-              />
-            ) : null}
+            {getBar(
+              'type',
+              'Operatori sanitari',
+              'categoriaOperatoriSanitariSociosanitari',
+              purple[700],
+              'a'
+            )}
+            {getBar('type', 'Ospiti RSA', 'categoriaOspitiRsa', purple[600], 'a')}
+            {getBar(
+              'type',
+              'Personale non sanitario',
+              'categoriaPersonaleNonSanitario',
+              purple[500],
+              'a'
+            )}
+            {getBar(
+              'type',
+              'Personale scolastico',
+              'categoriaPersonaleScolastico',
+              purple[400],
+              'a'
+            )}
+            {getBar('type', 'Soggetti fragili', 'categoriaSoggettiFragili', purple[300], 'a')}
+            {getBar('type', 'Forze armate', 'categoriaForzeArmate', purple[200], 'a')}
+            {getBar('type', 'Altro', 'categoriaAltro', purple[100], 'a')}
+
+            {getBar('type', 'Under 50', 'categoriaUnder50', green[200], 'a')}
+            {getBar('type', '50-59 anni', 'categoria5059', green[300], 'a')}
+            {getBar('type', '60-69 anni', 'categoria6069', green[400], 'a')}
+            {getBar('type', '70-79 anni', 'categoria7079', green[500], 'a')}
+            {getBar('type', 'Over 80', 'categoriaOver80', green[600], 'a')}
 
             {view === 'sex' ? (
               <Bar
@@ -304,6 +345,8 @@ const Vaccini: React.FC = () => {
                 stroke={orange[600]}
               />
             ) : null}
+
+            {getBar('supplier', 'Dosi consegnate', 'numeroDosi', indigo[600], 'a')}
           </BarChart>
         </ResponsiveContainer>
       </Container>

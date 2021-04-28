@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React, { useEffect, useState, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
+
 import {
   Container,
   FormControl,
@@ -78,10 +79,13 @@ function ValueLabelComponent(props: Props) {
     </MUITooltip>
   );
 }
+interface ParamTypes {
+  regione: string;
+}
 
 const Home: React.FC = () => {
   const classes = useStyles();
-  const [regione, setRegione] = useState(99);
+  const regione = Number.parseInt(useParams<ParamTypes>().regione, 10);
   const [grafico, setGrafico] = useState(1);
   const [datapoints, setDatapoints] = useState<DataPoint[]>();
   const [range, setRange] = useState([0, 100]);
@@ -94,8 +98,6 @@ const Home: React.FC = () => {
       setMin(0);
       setMax(nationalData.length - 1);
       setRange([0, nationalData.length - 1]);
-
-      setRegione(99);
     });
   }, []);
 
@@ -110,7 +112,7 @@ const Home: React.FC = () => {
   }, [regione]);
 
   const onChangeRegione = evt => {
-    setRegione(evt.target.value);
+    history.push(`/epidemia/${evt.target.value}`);
   };
 
   const onChangeGrafico = evt => {

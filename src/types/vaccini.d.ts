@@ -17,6 +17,14 @@ interface Somministrazione {
   categoriaOperatoriSanitariSociosanitari: number;
   categoriaPersonaleNonSanitario: number;
   categoriaOspitiRsa: number;
+  categoriaPersonaleScolastico: number;
+  categoriaSoggettiFragili: number;
+  categoriaForzeArmate: number;
+  categoriaAltro: number;
+  categoriaUnder50: number;
+  categoria5059: number;
+  categoria6069: number;
+  categoria7079: number;
   categoriaOver80: number;
   primaDose: number;
   secondaDose: number;

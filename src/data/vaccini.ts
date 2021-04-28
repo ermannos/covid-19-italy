@@ -48,6 +48,14 @@ const loadSomministrazioni = (): Promise<Somministrazione[]> => {
           categoriaOperatoriSanitariSociosanitari: d.categoria_operatori_sanitari_sociosanitari,
           categoriaPersonaleNonSanitario: d.categoria_personale_non_sanitario,
           categoriaOspitiRsa: d.categoria_ospiti_rsa,
+          categoriaPersonaleScolastico: d.categoria_personale_scolastico,
+          categoriaSoggettiFragili: d.categoria_soggetti_fragili,
+          categoriaForzeArmate: d.categoria_forze_armate,
+          categoriaAltro: d.categoria_altro,
+          categoriaUnder50: d.categoria_under50 || 0,
+          categoria5059: d.categoria_50_59 || 0,
+          categoria6069: d.categoria_60_69,
+          categoria7079: d.categoria_70_79,
           categoriaOver80: d.categoria_over80,
           primaDose: d.prima_dose,
           secondaDose: d.seconda_dose,
@@ -70,7 +78,7 @@ const loadConsegne = (): Promise<Consegna[]> => {
         const c: Consegna = {
           index: d.index,
           area: d.area,
-          fornitore: d.fornitore.replace('Pfizer/BioNTech', 'Pfizer'),
+          fornitore: d.fornitore.replace('Pfizer/BioNTech', 'Pfizer').replace('(AstraZeneca)', ''),
           dataConsegna: d.data_consegna,
           numeroDosi: d.numero_dosi,
         };
@@ -116,12 +124,20 @@ const getStatusByRegionType = (): Somministrazione[] => {
         dataSomministrazione: undefined,
       };
     } else {
-      if (s.area === 'LOM') console.log('Adding', s);
       const a: Somministrazione = status[s.area];
       a.categoriaOperatoriSanitariSociosanitari += s.categoriaOperatoriSanitariSociosanitari;
       a.categoriaOspitiRsa += s.categoriaOspitiRsa;
+      a.categoriaUnder50 += s.categoriaUnder50;
+      a.categoria5059 += s.categoria5059;
+      a.categoria6069 += s.categoria6069;
+      a.categoria7079 += s.categoria7079;
       a.categoriaOver80 += s.categoriaOver80;
       a.categoriaPersonaleNonSanitario += s.categoriaPersonaleNonSanitario;
+      a.categoriaPersonaleScolastico += s.categoriaPersonaleScolastico;
+      a.categoriaSoggettiFragili += s.categoriaSoggettiFragili;
+      a.categoriaForzeArmate += s.categoriaForzeArmate;
+      a.categoriaAltro += s.categoriaAltro;
+
       a.primaDose += s.primaDose;
       a.secondaDose += s.secondaDose;
       a.sessoFemminile += s.sessoFemminile;
@@ -139,6 +155,18 @@ const getConsegneByRegion = (regionCode: string): Consegna[] => {
     .sort((a, b) => (a.dataConsegna > b.dataConsegna ? 1 : -1));
 };
 
+const getTotaleConsegneBySupplier = (): Consegna[] => {
+  const map = {};
+  consegne.forEach(c => {
+    if (!map[c.fornitore]) {
+      map[c.fornitore] = { ...c, index: 0, dataConsegna: '', area: '' };
+    } else {
+      map[c.fornitore].numeroDosi += c.numeroDosi;
+    }
+  });
+  return Object.values(map);
+};
+
 export {
   refresh,
   refreshSomministrazioni,
@@ -149,4 +177,5 @@ export {
   getSomministrazioniByRegion,
   getConsegneByRegion,
   getStatusByRegionType,
+  getTotaleConsegneBySupplier,
 };
