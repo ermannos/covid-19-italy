@@ -184,125 +184,13 @@ const Regione: React.FC = () => {
               }
             />
           </Grid>
-        </Grid>
-        <Grid container spacing={2} className={classes.section}>
           <Grid item md={3} sm={4} xs={12}>
             <DataPaper
-              title="Operatori sanitari"
-              value={lastSomministrazione?.categoriaOperatoriSanitariSociosanitari || 0}
+              title="Somm. dose booster"
+              value={lastSomministrazione?.doseBooster || 0}
               delta={
-                (lastSomministrazione?.categoriaOperatoriSanitariSociosanitari || 0) -
-                (previousSomministrazione?.categoriaOperatoriSanitariSociosanitari || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Ospiti RSA"
-              value={lastSomministrazione?.categoriaOspitiRsa || 0}
-              delta={
-                (lastSomministrazione?.categoriaOspitiRsa || 0) -
-                (previousSomministrazione?.categoriaOspitiRsa || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Under 50"
-              value={lastSomministrazione?.categoriaUnder50 || 0}
-              delta={
-                (lastSomministrazione?.categoriaUnder50 || 0) -
-                (previousSomministrazione?.categoriaUnder50 || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="50-59 anni"
-              value={lastSomministrazione?.categoria5059 || 0}
-              delta={
-                (lastSomministrazione?.categoria5059 || 0) -
-                (previousSomministrazione?.categoria5059 || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="60-69 anni"
-              value={lastSomministrazione?.categoria6069 || 0}
-              delta={
-                (lastSomministrazione?.categoria6069 || 0) -
-                (previousSomministrazione?.categoria6069 || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="70-79 anni"
-              value={lastSomministrazione?.categoria7079 || 0}
-              delta={
-                (lastSomministrazione?.categoria7079 || 0) -
-                (previousSomministrazione?.categoria7079 || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Over 80"
-              value={lastSomministrazione?.categoriaOver80 || 0}
-              delta={
-                (lastSomministrazione?.categoriaOver80 || 0) -
-                (previousSomministrazione?.categoriaOver80 || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Pers. non sanitario"
-              value={lastSomministrazione?.categoriaPersonaleNonSanitario || 0}
-              delta={
-                (lastSomministrazione?.categoriaPersonaleNonSanitario || 0) -
-                (previousSomministrazione?.categoriaPersonaleNonSanitario || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Pers. scolastico"
-              value={lastSomministrazione?.categoriaPersonaleScolastico || 0}
-              delta={
-                (lastSomministrazione?.categoriaPersonaleScolastico || 0) -
-                (previousSomministrazione?.categoriaPersonaleScolastico || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Sogg. fragili"
-              value={lastSomministrazione?.categoriaSoggettiFragili || 0}
-              delta={
-                (lastSomministrazione?.categoriaSoggettiFragili || 0) -
-                (previousSomministrazione?.categoriaSoggettiFragili || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Forze armate"
-              value={lastSomministrazione?.categoriaForzeArmate || 0}
-              delta={
-                (lastSomministrazione?.categoriaForzeArmate || 0) -
-                (previousSomministrazione?.categoriaForzeArmate || 0)
-              }
-            />
-          </Grid>
-          <Grid item md={3} sm={4} xs={12}>
-            <DataPaper
-              title="Altro"
-              value={lastSomministrazione?.categoriaAltro || 0}
-              delta={
-                (lastSomministrazione?.categoriaAltro || 0) -
-                (previousSomministrazione?.categoriaAltro || 0)
+                (lastSomministrazione?.doseBooster || 0) -
+                (previousSomministrazione?.doseBooster || 0)
               }
             />
           </Grid>

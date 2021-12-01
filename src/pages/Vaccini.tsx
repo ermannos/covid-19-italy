@@ -3,17 +3,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Container, Grid, Hidden, Typography, useMediaQuery } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import {
-  blue,
-  grey,
-  lightBlue,
-  pink,
-  lightGreen,
-  orange,
-  purple,
-  green,
-  indigo,
-} from '@material-ui/core/colors';
+import { blue, grey, lightBlue, pink, lightGreen, orange, indigo } from '@material-ui/core/colors';
 import {
   LocalShipping as LocalShippingIcon,
   LocalHospital as LocalHospitalIcon,
@@ -228,7 +218,6 @@ const Vaccini: React.FC = () => {
               >
                 <StyledToggleButton value="values">Cons./som.</StyledToggleButton>
                 <StyledToggleButton value="percent">Sommin. (%)</StyledToggleButton>
-                <StyledToggleButton value="type">Categoria</StyledToggleButton>
                 <StyledToggleButton value="sex">Sesso</StyledToggleButton>
                 <StyledToggleButton value="dose">Dose</StyledToggleButton>
                 <StyledToggleButton value="supplier">Fornitore</StyledToggleButton>
@@ -275,38 +264,6 @@ const Vaccini: React.FC = () => {
                 )}
               </Bar>
             ) : null}
-
-            {getBar(
-              'type',
-              'Operatori sanitari',
-              'categoriaOperatoriSanitariSociosanitari',
-              purple[700],
-              'a'
-            )}
-            {getBar('type', 'Ospiti RSA', 'categoriaOspitiRsa', purple[600], 'a')}
-            {getBar(
-              'type',
-              'Personale non sanitario',
-              'categoriaPersonaleNonSanitario',
-              purple[500],
-              'a'
-            )}
-            {getBar(
-              'type',
-              'Personale scolastico',
-              'categoriaPersonaleScolastico',
-              purple[400],
-              'a'
-            )}
-            {getBar('type', 'Soggetti fragili', 'categoriaSoggettiFragili', purple[300], 'a')}
-            {getBar('type', 'Forze armate', 'categoriaForzeArmate', purple[200], 'a')}
-            {getBar('type', 'Altro', 'categoriaAltro', purple[100], 'a')}
-
-            {getBar('type', 'Under 50', 'categoriaUnder50', green[200], 'a')}
-            {getBar('type', '50-59 anni', 'categoria5059', green[300], 'a')}
-            {getBar('type', '60-69 anni', 'categoria6069', green[400], 'a')}
-            {getBar('type', '70-79 anni', 'categoria7079', green[500], 'a')}
-            {getBar('type', 'Over 80', 'categoriaOver80', green[600], 'a')}
 
             {view === 'sex' ? (
               <Bar
